@@ -37,7 +37,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     }
 
     if(!$has_error){
-        $sql="INSERT INTO posts(user_id,title,content) VALUES('$userid','$title','$content')";
+        $sql="INSERT INTO posts(user_id,title,content,status) VALUES('$userid','$title','$content','active')";
         $result=mysqli_query($conn,$sql);
         if(!$result){
             echo "query Unsucessful".mysqli_error($conn);

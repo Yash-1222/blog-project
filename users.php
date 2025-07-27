@@ -249,8 +249,7 @@ if(mysqli_num_rows($result)>0){
         <td>Country</td>
         <td>Role</td>
         <td>Status</td>
-        <td>DELETE</td>
-        <td>EDIT</td>
+        <td>Action</td>
              
     </tr>';
      while($row=mysqli_fetch_assoc($result)){
@@ -264,8 +263,8 @@ if(mysqli_num_rows($result)>0){
     <td>{$row['country']}</td>
     <td>{$row['roles']}</td>
     <td>{$row['status']}</td>
-    <td><a href='deleteuser.php?id={$row['id']}' class='del'>Delete</a></td>
-    <td><a href='edituser.php?id={$row['id']}' class='edit'>Edit</a></td>
+    <td><a href='deleteuser.php?id={$row['id']}' class='del'>Delete</a>
+    <a href='edituser.php?id={$row['id']}' class='edit'>Edit</a></td>
  </tr>";
      }
      $output.='</table>';

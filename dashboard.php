@@ -42,7 +42,7 @@
         margin-left: 200px;
     }
 
-    header {
+ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -51,9 +51,11 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     position: fixed;
     top: 0;
-    width: 100%;
+    left: 200px; /* shift to right of sidebar */
+    width: calc(100% - 200px); /* adjust width */
     z-index: 1000;
 }
+
 
 
     .profile-dropdown {
@@ -177,9 +179,11 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 
-$profileImage = (isset($_SESSION['profile_img']) && file_exists($_SESSION['profile_img']))
-    ? $_SESSION['profile_img']
-    : '../uploads/default-avatar.png';
+$defaultImage = 'uploads/default.png';
+$storedImage = $_SESSION['profile_img'] ?? $defaultImage;
+$serverFilePath = __DIR__ . '/' . $storedImage;
+
+$profileImage = file_exists($serverFilePath) ? $storedImage : $defaultImage;
 
 $role = $_SESSION['role'] ?? 'viewer';
 ?>
@@ -215,6 +219,7 @@ $sql = "SELECT p.*, u.username
 
 $result = mysqli_query($conn, $sql);
 if (mysqli_num_rows($result) > 0) {
+    
     while ($row = mysqli_fetch_assoc($result)) {
         echo "
         <div class='blog-post'>

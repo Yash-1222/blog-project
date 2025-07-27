@@ -212,22 +212,34 @@ $profileImage = (isset($_SESSION['profile_img']) && file_exists($_SESSION['profi
         <?php
         $sql = "SELECT * FROM posts WHERE user_id = '$userid' ORDER BY created_at DESC";
         $result = mysqli_query($conn, $sql);
+
         if (mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
+                $isUnactive = $row['status'] === 'unactive';
                 echo "
-                <div class='blog-post'>
+                <div class='blog-post'>";
+                 // ✅ This part is now outside of the echo string
+                if ($isUnactive) {
+                    echo "<span style='color: red; font-size: 14px; float: right;'>(Unactive)</span>";
+                }
+
+                echo "
                     <h2>" . htmlspecialchars($row['title']) . "</h2>
                     <p class='meta'>Posted on " . date('F j, Y', strtotime($row['created_at'])) . "</p>
                     <p>" . nl2br(htmlspecialchars(substr($row['content'], 0, 100))) . "...</p>
                     <form action='Editorupdate.php' method='get'>
                         <input type='hidden' name='id' value='{$row['id']}'>
                         <button type='submit' class='update-button'>Update</button>
-                    </form>
-                </div>";
+                    </form>";
+                
+               
+
+                echo "</div>";
             }
         } else {
             echo "<p>No blog posts found. Click 'Create New Post' to add one.</p>";
         }
+
         ?>
     </div>
 </div>

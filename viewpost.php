@@ -61,7 +61,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     if ($row = mysqli_fetch_assoc($result)) {
         $imagePath = (!empty($row['profile_path']) && file_exists($row['profile_path']))
             ? $row['profile_path']
-            : '../uploads/default-avatar.png';
+            : 'uploads/default.png';
 
         echo '<img src="' . htmlspecialchars($imagePath) . '" alt="Profile Image" class="profile-img">';
         echo '<h2 id="align">' . htmlspecialchars($row['username']) . '</h2>';

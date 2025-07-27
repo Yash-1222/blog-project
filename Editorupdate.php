@@ -24,8 +24,8 @@ if($result){
             <input type="text" disabled value="<?php echo $row['created_at'];?>"><br><br>
             <label for="status">Status</label>
             <select name="status" id="status">
-                <option value="active">Active</option>
-                <option value="unactive">Unactive</option>
+                <option value="active" <?php if($row['status'] == 'active') echo 'selected'; ?>>Active</option>
+                <option value="unactive" <?php if($row['status'] == 'unactive') echo 'selected'; ?>>Unactive</option>
             </select><br><br>
             <button type="submit">Submit</button>
             </form>

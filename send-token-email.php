@@ -11,7 +11,7 @@ use PHPMailer\PHPMailer\SMTP;
 
 include "config.php";
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'GET' || $_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email'])) {
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $result = mysqli_query($conn, "SELECT * FROM users WHERE email = '$email'");
 
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['email'])) {
         $sql ="UPDATE users SET reset_link_token='$token', expiry_date='$expiry_date' WHERE email='$email'";
         mysqli_query($conn, $sql);
 
-      $reset_link = "http://localhost82.local.com/training/login&password/reset-pssword.php?email=" . urlencode($email) . "&token=" . urlencode($token);
+      $reset_link = "http://localhost/blog-project/send-token-email.php?email=" . urlencode($email) . "&token=" . urlencode($token);
 
         $mail = new PHPMailer(true);
 

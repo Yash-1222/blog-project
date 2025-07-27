@@ -1,8 +1,9 @@
-<!-- textarea, radio, checkbox, dropdown, image upload -->
 <?php
-     include "config.php";
-     error_reporting(E_ALL);
-ini_set('display_errors', 1);
+        include "config.php";
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+        session_start(); 
+
         $name=$email=$pwd=$text=$gender=$country=$img=$file=$role="";
         $nameerr=$emailerr=$pwderr=$texterr=$gendererr=$countryerr=$imgerr=$hobbieerr=$fileerr=$roleerr="";
             $allowedhobbies=['Reading','Traveling','Gaming'];
@@ -22,10 +23,10 @@ ini_set('display_errors', 1);
             $text =isset($_POST['comments'])?test_input($_POST['comments']):'';
 
             $has_error=false;
-        if(!$name||!$email||!$pwd){
-            echo "<p class='error'>All fields are required</p>";
-            $has_error=true;
-        }
+        // if(!$name||!$email||!$pwd){
+        //     echo "<div class='text-danger'>All fields are required</div>";
+        //     $has_error=true;
+        // }
         if(empty($name)){
             $nameerr="Name is required";
               $has_error=true;
@@ -107,7 +108,7 @@ ini_set('display_errors', 1);
                                "gif" => "image/gif",
                                "png" => "image/png");
                 $filename=basename($file['name']);
-                $upload_dir="../uploads/";
+                $upload_dir="uploads/";
                 $filepath= $upload_dir.$filename;
                 $filesize =$file['size'];
                 $filetype =$file['type'];
@@ -166,9 +167,12 @@ ini_set('display_errors', 1);
                 if(!mysqli_stmt_execute($stmt)){
                     echo "query failed".'('.mysqli_stmt_errno($stmt).')'.mysqli_stmt_error($stmt);
                 }
-                else{
-                    echo "Registration successfully";
+               else {
+                    $_SESSION['success_msg'] = "Registration successful. Please login.";
+                    header('Location: login.php');
+                    exit;
                 }
+
                 mysqli_stmt_close($stmt);
                 mysqli_close($conn);
             }
@@ -179,71 +183,134 @@ ini_set('display_errors', 1);
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insert</title>
-    <style>
-        .error{
-            color:red;
-            font-weight:10px;
-        }
-    </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insert</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<!-- textarea, radio, checkbox, dropdown, image upload -->
 <body>
-    
-    <form action="" method="post" enctype="multipart/form-data">
 
-        <label for="role">Roles:</label>
-        <select id="role" name="role">
-        <option value=""disabled selected>Select your role :</option>
-        <option value="admin" <?PHP if($country=='admin') echo "selected";?>>Admin</option>
-        <option value="editor" <?PHP if($country=='editor') echo "selected";?>>Editor</option>
-        <option value="viewer" <?PHP if($country=='viewer') echo "selected";?>>Viewer</option>
-        </select><span class="error"><?php echo $roleerr;?></span><br><br>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white text-center">
+          <h3 class="mb-0">User Registration Form</h3>
+        </div>
+        <div class="card-body">
+          <form action="" method="post" enctype="multipart/form-data">
 
-        <label for="name">Name :</label>
-        <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($name);?>"><span class="error"><?php echo $nameerr;?></span><br>
-        <label for="mail">email :</label>
-        <input type="email" id="mail" name="mail" value="<?php echo htmlspecialchars($email);?>"><span class="error"><?php echo $emailerr;?></span><br>
-        
-        <label for="comments">Comments:</label>
-        <textarea id="comments" name="comments" rows="4" cols="30" placeholder="Enter your comments..." ><?php echo htmlspecialchars($text);?></textarea><span class="error"><?php echo $texterr;?></span><br>
-        
-        <label>Gender:</label>
-        <input type="radio" id="male" name="gender" value="male"<?php if($gender=="male") echo "checked"; ?>>
-        <label for="male">Male</label>
-        <input type="radio" id="female" name="gender" value="female"<?php if($gender=="female") echo "checked"; ?>>
-        <label for="female">Female</label>
-        <input type="radio" id="other" name="gender" value="other" <?php if($gender=="other") echo "checked"; ?>>
-        <label for="other">Other</label><span class="error"><?php echo $gendererr;?></span><br>
+            <!-- Roles -->
+            <div class="mb-3">
+              <label for="role" class="form-label">Role</label>
+              <select class="form-select" id="role" name="role">
+                <option value="" disabled selected>Select your role</option>
+                <option value="admin" <?= ($role=='admin') ? 'selected' : '' ?>>Admin</option>
+                <option value="editor" <?= ($role=='editor') ? 'selected' : '' ?>>Editor</option>
+                <option value="viewer" <?= ($role=='viewer') ? 'selected' : '' ?>>Viewer</option>
+              </select>
+              <div class="text-danger"><?= $roleerr ?></div>
+            </div>
 
-        <label>Hobbies:</label>
-        <input type="checkbox" id="reading" name="hobbies[]" value="Reading"  <?php if( isset($hobbies)&&in_array("Reading", $hobbies)) echo 'checked'; ?>>
-        <label for="reading">Reading</label>
-        <input type="checkbox" id="traveling" name="hobbies[]" value="Traveling" <?php if(isset($hobbies)&&in_array("Traveling", $hobbies)) echo 'checked';?>>
-        <label for="traveling">Traveling</label>
-         <input type="checkbox" id="gaming" name="hobbies[]" value="Gaming" <?php if(isset($hobbies)&&in_array("Gaming", $hobbies)) echo 'checked'; ?>>
-        <label for="gaming">Gaming</label><br><span class="error"><?php echo $hobbieerr;?></span><br>
+            <!-- Name -->
+            <div class="mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input type="text" class="form-control" id="name" name="name" value="<?= htmlspecialchars($name) ?>">
+              <div class="text-danger"><?= $nameerr ?></div>
+            </div>
 
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="mail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="mail" name="mail" value="<?= htmlspecialchars($email) ?>">
+              <div class="text-danger"><?= $emailerr ?></div>
+            </div>
 
-        <label for="country">Country:</label>
-        <select id="country" name="country">
-        <option value="" disabled selected>Select your country</option>
-        <option value="United_States" <?PHP if($country=='United_States') echo "selected";?>>United States</option>
-        <option value="United_Kingdom" <?PHP if($country=='United_Kingdom') echo "selected";?>>United Kingdom</option>
-        <option value="Canada" <?PHP if($country=='Canada') echo "selected";?>>Canada</option>
-        <option value="Australia" <?PHP if($country=='Australia') echo "selected";?>>Australia</option>
-        <option value="other" <?PHP if($country=='other') echo "selected";?>>Other</option>
-        </select><span class="error"><?php echo $countryerr;?></span><br><br>
+            <!-- Password -->
+            <div class="mb-3">
+              <label for="pwd" class="form-label">Password</label>
+              <input type="password" class="form-control" id="pwd" name="pwd">
+              <div class="text-danger"><?= $pwderr ?></div>
+            </div>
 
-        <label for="pwd">Password:</label>
-        <input type="password" id="pwd" name="pwd"><span class="error"><?php echo $pwderr;?></span><br><br>
+            <!-- Comments -->
+            <div class="mb-3">
+              <label for="comments" class="form-label">Comments</label>
+              <textarea class="form-control" id="comments" name="comments" rows="3"><?= htmlspecialchars($text) ?></textarea>
+              <div class="text-danger"><?= $texterr ?></div>
+            </div>
 
-        <label for="myfile">Select a file to upload</label>
-        <input type="file" name="myfile" id="myfile"><span class="error"><?php echo $fileerr;?></span><br><br><br><br>
-        <button type="submit">Submit</button>
-        You have an account<a href="login.php">Login</a>
-        </form>
-        
+            <!-- Gender -->
+            <div class="mb-3">
+              <label class="form-label d-block">Gender</label>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="male" name="gender" value="male" <?= ($gender=="male") ? "checked" : "" ?>>
+                <label class="form-check-label" for="male">Male</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="female" name="gender" value="female" <?= ($gender=="female") ? "checked" : "" ?>>
+                <label class="form-check-label" for="female">Female</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" id="other" name="gender" value="other" <?= ($gender=="other") ? "checked" : "" ?>>
+                <label class="form-check-label" for="other">Other</label>
+              </div>
+              <div class="text-danger"><?= $gendererr ?></div>
+            </div>
+
+            <!-- Hobbies -->
+            <div class="mb-3">
+              <label class="form-label d-block">Hobbies</label>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="reading" name="hobbies[]" value="Reading" <?= in_array("Reading", $hobbies) ? 'checked' : '' ?>>
+                <label class="form-check-label" for="reading">Reading</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="traveling" name="hobbies[]" value="Traveling" <?= in_array("Traveling", $hobbies) ? 'checked' : '' ?>>
+                <label class="form-check-label" for="traveling">Traveling</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="gaming" name="hobbies[]" value="Gaming" <?= in_array("Gaming", $hobbies) ? 'checked' : '' ?>>
+                <label class="form-check-label" for="gaming">Gaming</label>
+              </div>
+              <div class="text-danger"><?= $hobbieerr ?></div>
+            </div>
+
+            <!-- Country -->
+            <div class="mb-3">
+              <label for="country" class="form-label">Country</label>
+              <select class="form-select" id="country" name="country">
+                <option value="" disabled selected>Select your country</option>
+                <option value="United_States" <?= ($country=='United_States') ? "selected" : "" ?>>United States</option>
+                <option value="United_Kingdom" <?= ($country=='United_Kingdom') ? "selected" : "" ?>>United Kingdom</option>
+                <option value="Canada" <?= ($country=='Canada') ? "selected" : "" ?>>Canada</option>
+                <option value="Australia" <?= ($country=='Australia') ? "selected" : "" ?>>Australia</option>
+                <option value="other" <?= ($country=='Other') ? "selected" : "" ?>>Other</option>
+              </select>
+              <div class="text-danger"><?= $countryerr ?></div>
+            </div>
+
+            <!-- File Upload -->
+            <div class="mb-3">
+              <label for="myfile" class="form-label">Profile Image</label>
+              <input class="form-control" type="file" name="myfile" id="myfile">
+              <div class="text-danger"><?= $fileerr ?></div>
+            </div>
+
+            <!-- Submit -->
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">Submit</button>
+              <a href="login.php" class="btn btn-outline-success">Already have an account? Login</a>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
